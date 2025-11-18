@@ -1,4 +1,4 @@
-name: release
+name: build-release-with-vulkan
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
       - name: Build using CMake
         shell: msys2 {0}
         run: |
-            cmake -B build -DWHISPER_SDL2=ON -DBUILD_SHARED_LIBS=ON -DGGML_VULKAN=ON -DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS
+            cmake -B build -DWHISPER_SDL2=ON -DBUILD_SHARED_LIBS=ON -DGGML_VULKAN=ON
             cmake --build build --config Release -j
             cp ../../../../ucrt64/bin/libopenblas.dll build/bin/
             cp ../../../../ucrt64/bin/libwinpthread* build/bin/
