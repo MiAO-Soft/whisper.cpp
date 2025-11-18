@@ -1,0 +1,56 @@
+name: release
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - name: Clone
+        uses: actions/checkout@v4
+        
+      - name: Setup
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          msystem: UCRT64
+          install: >-
+            base-devel
+            git
+            zip
+            mingw-w64-ucrt-x86_64-toolchain
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-SDL2
+            mingw-w64-ucrt-x86_64-openblas
+            mingw-w64-ucrt-x86_64-gcc
+            mingw-w64-ucrt-x86_64-vulkan-devel
+            mingw-w64-ucrt-x86_64-shaderc
+            
+      - name: Build using CMake
+        shell: msys2 {0}
+        run: |
+            cmake -B build -DWHISPER_SDL2=ON -DBUILD_SHARED_LIBS=ON -DGGML_VULKAN=ON -DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS
+            cmake --build build --config Release -j
+            cp ../../../../ucrt64/bin/libopenblas.dll build/bin/
+            cp ../../../../ucrt64/bin/libwinpthread* build/bin/
+            cp ../../../../ucrt64/bin/libgfortran* build/bin/
+            cp ../../../../ucrt64/bin/libgomp* build/bin/
+            cp ../../../../ucrt64/bin/libquadmath* build/bin/
+            cp ../../../../ucrt64/bin/libstdc++* build/bin/
+            zip -j release.zip build/bin/*
+            sha256sum release.zip
+            
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: Release ${{ github.run_id }}
+          tag_name: ${{ github.run_id }}
+          name: build-${{ github.run_id }}
+          files: |
+            release.zip
