@@ -759,7 +759,7 @@ int main(int argc, char ** argv) {
 
         <div>
             <h2>Try it out</h2>
-            <form action=")" + std::to_string(sparams.request_path) + std::to_string(sparams.inference_path) + R(" method="POST" enctype="multipart/form-data">
+            <form action=")" + std::to_string(sparams.request_path) + std::to_string(sparams.inference_path) + R"(" method="POST" enctype="multipart/form-data">
                 <label for="file">Choose an audio file:</label>
                 <input type="file" id="file" name="file" accept="audio/*" required><br>
 
@@ -1153,7 +1153,7 @@ int main(int argc, char ** argv) {
         // check if the model is in the file system
     });
 
-    svr->Get(sparams.request_path + "/health", [&](const Request &, Response &res){
+    svr->Get("/health", [&](const Request &, Response &res){
         server_state current_state = state.load();
         if (current_state == SERVER_STATE_READY) {
             const std::string health_response = "{\"status\":\"ok\"}";
