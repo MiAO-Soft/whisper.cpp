@@ -791,15 +791,6 @@ int main(int argc, char ** argv) {
         return false;
     });
 
-    svr->Get("/health", [&](const Request &, Response &res){
-        json jres = json{
-            {"status", "healthy", "service", "Whisper.cpp openai server is alive"}
-        };
-        res.set_content(jres.dump(-1, ' ', false, json::error_handler_t::replace),
-                        "application/json");
-        return false;
-    });
-
     svr->Options(sparams.request_path + sparams.inference_path, [&](const Request &, Response &){
     });
 
@@ -1162,7 +1153,7 @@ int main(int argc, char ** argv) {
         // check if the model is in the file system
     });
 
-    svr->Get(sparams.request_path + "/health", [&](const Request &, Response &res){
+    svr->Get("/health", [&](const Request &, Response &res){
         server_state current_state = state.load();
         if (current_state == SERVER_STATE_READY) {
             const std::string health_response = "{\"status\":\"ok\"}";
