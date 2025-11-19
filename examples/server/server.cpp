@@ -759,7 +759,7 @@ int main(int argc, char ** argv) {
 
         <div>
             <h2>Try it out</h2>
-            <form action=")" + std::to_string(sparams.request_path) + std::to_string(sparams.inference_path) + R(" method="POST" enctype="multipart/form-data">
+            <form action=")" + std::to_string(sparams.request_path) + std::to_string(sparams.inference_path) + R"(" method="POST" enctype="multipart/form-data">
                 <label for="file">Choose an audio file:</label>
                 <input type="file" id="file" name="file" accept="audio/*" required><br>
 
@@ -788,6 +788,15 @@ int main(int argc, char ** argv) {
     // this is only called if no index.html is found in the public --path
     svr->Get(sparams.request_path + "/", [&](const Request &, Response &res){
         res.set_content(default_content, "text/html");
+        return false;
+    });
+
+    svr->Get("/health", [&](const Request &, Response &res){
+        json jres = json{
+            {"status", "healthy", "service", "Whisper.cpp openai server is alive"}
+        };
+        res.set_content(jres.dump(-1, ' ', false, json::error_handler_t::replace),
+                        "application/json");
         return false;
     });
 
