@@ -1,4 +1,4 @@
-name: build-release-with-vulkan
+name: build-release-with-vulkan-windows
 
 on:
   push:
@@ -43,14 +43,14 @@ jobs:
             cp ../../../../ucrt64/bin/libgomp* build/bin/
             cp ../../../../ucrt64/bin/libquadmath* build/bin/
             cp ../../../../ucrt64/bin/libstdc++* build/bin/
-            zip -j release.zip build/bin/*
-            sha256sum release.zip
+            zip -j release-windows.zip build/bin/*
+            sha256sum release-windows.zip
             
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           body: Release ${{ github.run_id }}
           tag_name: ${{ github.run_id }}
-          name: build-${{ github.run_id }}
+          name: build-windows-${{ github.run_id }}
           files: |
-            release.zip
+            release-windows.zip
