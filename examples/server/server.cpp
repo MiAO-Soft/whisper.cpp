@@ -609,6 +609,11 @@ void get_req_parameters(const Request & req, whisper_params & params)
 int main(int argc, char ** argv) {
     ggml_backend_load_all();
 
+    // fix console encoding problem for non-en language
+    #if defined (_WIN32)
+    SetConsoleOutputCP(65001);
+    #endif
+
     whisper_params params;
     server_params sparams;
 
