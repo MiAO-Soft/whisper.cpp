@@ -737,7 +737,7 @@ int main(int argc, char ** argv) {
 
         <h2>/inference</h2>
         <pre>
-    curl 127.0.0.1:)" + std::to_string(sparams.port) + R"(/inference \
+    curl 127.0.0.1:)" + std::to_string(sparams.port) + std::to_string(sparams.request_path) + std::to_string(sparams.inference_path) + R"(\
     -H "Content-Type: multipart/form-data" \
     -F file="@&lt;file-path&gt;" \
     -F temperature="0.0" \
@@ -747,14 +747,14 @@ int main(int argc, char ** argv) {
 
         <h2>/load</h2>
         <pre>
-    curl 127.0.0.1:)" + std::to_string(sparams.port) + R"(/load \
+    curl 127.0.0.1:)" + std::to_string(sparams.port) + std::to_string(sparams.request_path) + R"(/load \
     -H "Content-Type: multipart/form-data" \
     -F model="&lt;path-to-model-file&gt;"
         </pre>
 
         <div>
             <h2>Try it out</h2>
-            <form action="/inference" method="POST" enctype="multipart/form-data">
+            <form action=")" + std::to_string(sparams.request_path) + std::to_string(sparams.inference_path) + R(" method="POST" enctype="multipart/form-data">
                 <label for="file">Choose an audio file:</label>
                 <input type="file" id="file" name="file" accept="audio/*" required><br>
 
