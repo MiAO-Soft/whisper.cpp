@@ -58,8 +58,8 @@ struct server_params
 {
     std::string hostname = "127.0.0.1";
     std::string public_path = "examples/server/public";
-    std::string request_path = "";
-    std::string inference_path = "/inference";
+    std::string request_path = "/v1/audio";
+    std::string inference_path = "/transcriptions";
 
     int32_t port          = 8080;
     int32_t read_timeout  = 600;
@@ -171,8 +171,8 @@ void whisper_print_usage(int /*argc*/, char ** argv, const whisper_params & para
     fprintf(stderr, "  --host HOST,                   [%-7s] Hostname/ip-adress for the server\n", sparams.hostname.c_str());
     fprintf(stderr, "  --port PORT,                   [%-7d] Port number for the server\n", sparams.port);
     fprintf(stderr, "  --public PATH,                 [%-7s] Path to the public folder\n", sparams.public_path.c_str());
-    fprintf(stderr, "  --request-path PATH,           [%-7s] Request path for all requests\n", sparams.request_path.c_str());
-    fprintf(stderr, "  --inference-path PATH,         [%-7s] Inference path for all requests\n", sparams.inference_path.c_str());
+    fprintf(stderr, "  --request-path PATH,           [%-7s] Request path for all requests, default /v1/audio\n", sparams.request_path.c_str());
+    fprintf(stderr, "  --inference-path PATH,         [%-7s] Inference path for all requests, default /transcriptions\n", sparams.inference_path.c_str());
     fprintf(stderr, "  --convert,                     [%-7s] Convert audio to WAV, requires ffmpeg on the server\n", sparams.ffmpeg_converter ? "true" : "false");
     fprintf(stderr, "  -sns,      --suppress-nst      [%-7s] suppress non-speech tokens\n", params.suppress_nst ? "true" : "false");
     fprintf(stderr, "  -nth N,    --no-speech-thold N [%-7.2f] no speech threshold\n",   params.no_speech_thold);
@@ -608,11 +608,6 @@ void get_req_parameters(const Request & req, whisper_params & params)
 
 int main(int argc, char ** argv) {
     ggml_backend_load_all();
-
-    // fix console encoding problem for non-en language
-    #if defined (_WIN32)
-    SetConsoleOutputCP(65001);
-    #endif
 
     whisper_params params;
     server_params sparams;
@@ -1112,6 +1107,7 @@ int main(int argc, char ** argv) {
         // reset params to their defaults
         params = default_params;
     });
+    
     svr->Post(sparams.request_path + "/load", [&](const Request &req, Response &res){
         std::lock_guard<std::mutex> lock(whisper_mutex);
         state.store(SERVER_STATE_LOADING_MODEL);

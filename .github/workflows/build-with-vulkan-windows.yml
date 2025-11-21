@@ -35,14 +35,19 @@ jobs:
       - name: Build using CMake
         shell: msys2 {0}
         run: |
-            cmake -B build -DWHISPER_SDL2=ON -DBUILD_SHARED_LIBS=ON -DGGML_VULKAN=ON
+            cmake -B build -DWHISPER_SDL2=ON -DBUILD_SHARED_LIBS=ON -DGGML_VULKAN=ON -DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS
             cmake --build build --config Release -j
+            cp ../../../../ucrt64/bin/libgcc_s_seh-1.dll build/bin/
             cp ../../../../ucrt64/bin/libopenblas.dll build/bin/
             cp ../../../../ucrt64/bin/libwinpthread* build/bin/
             cp ../../../../ucrt64/bin/libgfortran* build/bin/
             cp ../../../../ucrt64/bin/libgomp* build/bin/
             cp ../../../../ucrt64/bin/libquadmath* build/bin/
             cp ../../../../ucrt64/bin/libstdc++* build/bin/
+            cp ../../../../ucrt64/bin/SDL2.dll build/bin/
+            
+            mkdir -p build/bin/examples/server/
+            cp -r examples/server/public build/bin/examples/server/
             zip -j release-windows.zip build/bin/*
             sha256sum release-windows.zip
             
