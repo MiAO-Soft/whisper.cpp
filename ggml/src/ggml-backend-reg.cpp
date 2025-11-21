@@ -586,6 +586,11 @@ static ggml_backend_reg_t ggml_backend_load_best(const char * name, bool silent,
 }
 
 void ggml_backend_load_all() {
+    // fix console encoding problem for non-en language
+    #if defined (_WIN32)
+    SetConsoleOutputCP(65001);
+    #endif
+    
     ggml_backend_load_all_from_path(nullptr);
 }
 
