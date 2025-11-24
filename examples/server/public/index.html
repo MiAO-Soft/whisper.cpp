@@ -756,6 +756,22 @@
                         </svg>
                     </button>
                 </div>
+                
+                <!-- 新增的处理器和VAD设置 -->
+                <div style="margin-top: 12px; width: 100%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label for="n_processors" style="font-size: 14px;">Num processors:</label>
+                        <span id="n_processors_value" style="font-size: 14px; font-weight: bold;">1</span>
+                    </div>
+                    <input type="range" id="n_processors" name="n_processors" min="1" max="8" value="1" step="1" 
+                           style="width: 100%; margin-bottom: 12px;"
+                           oninput="document.getElementById('n_processors_value').textContent = this.value;">
+                    
+                    <div style="display: flex; align-items: center;">
+                        <input type="checkbox" id="vad" name="vad" style="margin-right: 8px;">
+                        <label for="vad" style="font-size: 14px;">Enable VAD</label>
+                    </div>
+                </div>
                 <div style="margin-top: 12px; width: 100%; text-align: center;">
                     <a href="/v1/audio/" target="_blank" style="color: var(--accent-color); text-decoration: none; font-weight: 500; padding: 8px 16px; border: 1px solid var(--accent-color); border-radius: 4px; transition: all 0.2s;" 
                        onmouseover="this.style.backgroundColor='var(--accent-color)'; this.style.color='white';" 
@@ -1348,10 +1364,15 @@
                 clearDebugInfo();
                 
                 const responseFormat = document.getElementById('response_format').value;
+                const vad = document.getElementById('vad').checked;
+                const n_processors = document.getElementById('n_processors').value;
+                
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('model', 'whisper-1');
                 formData.append('response_format', responseFormat);
+                formData.append('vad', vad);
+                formData.append('n_processors', n_processors);
                 
                 // Show upload progress indicator
                 uploadProgress.style.display = 'block';

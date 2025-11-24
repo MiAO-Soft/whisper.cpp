@@ -470,6 +470,10 @@ bool parse_str_to_bool(const std::string & s) {
 
 void get_req_parameters(const Request & req, whisper_params & params)
 {
+    if (req.has_file("n_processors")) 
+    {
+        params.n_processors = std::stoi(req.get_file_value("n_processors").content);
+    }
     if (req.has_file("offset_t"))
     {
         params.offset_t_ms = std::stoi(req.get_file_value("offset_t").content);
