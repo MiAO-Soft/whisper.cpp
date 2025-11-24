@@ -16,7 +16,7 @@
         startBtn.addEventListener('click', async () => {
             if (!isRecording) {
                 try {
-                    socket = new WebSocket('ws://192.168.2.109:9002');
+                    socket = new WebSocket('ws://127.0.0.1:9002');
                     
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 			const audioContext = new AudioContext({sampleRate: 16000});

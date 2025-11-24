@@ -172,6 +172,9 @@ WhisperServer::~WhisperServer() {
 }
 
 void WhisperServer::run() {
-    server.listenAndStart();
+    if (!server.listenAndStart()) {
+        fprintf(stderr, "server start failed");
+        return;
+    }
     while (running) std::this_thread::sleep_for(std::chrono::seconds(1));
 }
