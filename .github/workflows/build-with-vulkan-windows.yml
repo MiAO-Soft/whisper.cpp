@@ -54,7 +54,7 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          body: Release ${{ github.run_id }}
+          body: Release ${{ github.run_id }}\n<code>whisper-server.exe -m ggml-large-v3-turbo.bin --host 0.0.0.0 --port 18181 -t 8 -l auto  --vad --vad-model ggml-silero-v6.2.0.bin -p 8 -mc 0 -di -pp -pr</code>
           tag_name: ${{ github.run_id }}
           name: build-windows-${{ github.run_id }}
           files: |
