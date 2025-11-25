@@ -46,10 +46,8 @@ jobs:
             cp ../../../../ucrt64/bin/libstdc++* build/bin/
             cp ../../../../ucrt64/bin/SDL2.dll build/bin/
             
-            mkdir -p build/bin/examples/server/
-            cp -r examples/server/public build/bin/examples/server/
             cp examples/server/*.bat build/bin/
-            zip -j release-windows.zip build/bin/*
+            zip -j release-windows.zip build/bin/* examples/server/public/*
             sha256sum release-windows.zip
             
       - name: Release
