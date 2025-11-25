@@ -48,6 +48,7 @@ jobs:
             
             mkdir -p build/bin/examples/server/
             cp -r examples/server/public build/bin/examples/server/
+            cp examples/server/*.bat build/bin/
             zip -j release-windows.zip build/bin/*
             sha256sum release-windows.zip
             
