@@ -708,6 +708,8 @@ int main(int argc, char ** argv) {
 
     svr->set_default_headers({{"Server", "whisper.cpp"},
                              {"Access-Control-Allow-Origin", "*"},
+                             {"Cross-Origin-Embedder-Policy", "require-corp"},
+                             {"Cross-Origin-Opener-Policy", "same-origin"},
                              {"Access-Control-Allow-Headers", "content-type, authorization"}});
 
     std::string const default_content = R"(

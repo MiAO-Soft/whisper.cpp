@@ -48,6 +48,8 @@ examples/whisper.objc/whisper.objc.xcodeproj/project.xcworkspace/xcuserdata
 
 extra/bench-gg.txt
 
+venv
+models/venv
 models/*.mlmodel
 models/*.mlmodelc
 models/*.mlpackage

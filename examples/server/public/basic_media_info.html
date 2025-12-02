@@ -1,0 +1,237 @@
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Basic media info</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+
+    <meta name="theme-color" content="#7952b3">
+
+    <script src="ffmpeg.audio.core/v5/ffmpeg.core.js"></script>
+    <script src="js/ffmpeg.helper.js"></script>
+    <script src="js/task.helper.js"></script>
+
+    <style type="text/css">
+      #drop_zone{
+          box-sizing: border-box;
+          display: none;
+          position: fixed;
+          width: 100%;
+          height: 100%;
+          left: 0;
+          top: 0;
+          z-index: 99999;
+          background: rgba(0,0,94,.2);
+          box-shadow: 32px 23px 131px -1px rgba(0,0,0,0.75) inset;
+          justify-content: center;
+          align-items: center;
+      }
+
+      body{
+        padding: 0.5rem;
+      }
+      fieldset{
+        margin-bottom: 0.5rem ;
+      }
+
+      tbody > tr:last-child > td {
+      border-bottom: 0;
+      }
+    </style>
+
+    <script type="text/javascript">
+
+      var mediaFiles = [];
+      var verbose = true;
+
+      function dragOverHandler(ev) {
+        ev.preventDefault();
+      }
+
+      function dragEnterHandler(ev){
+        document.getElementById("drop_zone").style.display = "flex";
+      }
+
+      function dragLeaveHandler(ev){
+        document.getElementById("drop_zone").style.display = "none";
+      }
+
+      function addToQueue(file){
+        var newExt = ""
+        var radio_buttons = document.getElementsByName('format_select');
+        for(i = 0; i < radio_buttons.length; i++) {
+            if(radio_buttons[i].checked) newExt = radio_buttons[i].value;                
+        }
+
+        var inputFile = new MediaFile(file.name);
+        inputFile.buffer = file.arrayBuffer();
+        mediaFiles.push(inputFile);
+      }
+
+      async function processMediaFiles(){
+      	
+      	for(var i = 0 ; i < mediaFiles.length ; i++){
+      		var info = await mediaFiles[i].info();
+      		addInterfaceElements(info,mediaFiles[i].file_name,mediaFiles[i].duration);
+      	}
+      	mediaFiles = [];
+      }
+
+
+      function dropHandler(ev) {
+        dragLeaveHandler();
+
+        // Prevent default behavior (Prevent file from being opened)
+        ev.preventDefault();
+
+        if (ev.dataTransfer.items) {
+          // Use DataTransferItemList interface to access the file(s)
+          for (var i = 0; i < ev.dataTransfer.items.length; i++) {
+            // If dropped items aren't files, reject them
+            if (ev.dataTransfer.items[i].kind === 'file') {
+              var file = ev.dataTransfer.items[i].getAsFile();
+              //console.log('Items file[' + i + '].name = ' + file.name);
+              addToQueue(file);
+            }
+          }
+        } else {
+          // Use DataTransfer interface to access the file(s)
+          for (var i = 0; i < ev.dataTransfer.files.length; i++) {
+            //console.log('DataTransfer ... file[' + i + '].name = ' + ev.dataTransfer.files[i].name);
+            addToQueue(ev.dataTransfer.files[i]);
+          } 
+        }
+        //console.log("Process queue");
+
+        processMediaFiles();
+      }
+
+      window.onload = function() {
+
+        document.getElementById('uploader').addEventListener('change', addToFileQueue);
+
+        window.addEventListener('dragenter', dragEnterHandler);
+
+        document.getElementById("drop_zone").addEventListener('dragenter', dragEnterHandler);
+        document.getElementById("drop_zone").addEventListener('dragleave', dragLeaveHandler);
+        document.getElementById("drop_zone").addEventListener('drop', dropHandler);
+        document.getElementById("drop_zone").addEventListener('dragover', dragOverHandler);
+
+        document.getElementById('uploader_button').addEventListener('click', () => {document.getElementById('uploader').click();});
+      };
+      
+
+      function addInterfaceElements(info,file_name,duration){
+      	
+      	const results_tbody = document.getElementById("info_results");
+      	var first = results_tbody.children.length == 0;
+
+        var row = document.createElement('tr');
+        results_tbody.appendChild(row);
+
+        var index_td = document.createElement('th');
+        index_td.className="align-middle";
+        if(first)
+        	index_td.innerHTML = "" + file_name + " (" + duration + "s)";
+    	else
+    		index_td.innerHTML = "<br><br>" + file_name + " (" + duration + "s)";
+        row.appendChild(index_td);
+        index_td = document.createElement('td');
+	    row.appendChild(index_td);
+	    index_td = document.createElement('td');
+	    row.appendChild(index_td);
+	    index_td = document.createElement('td');
+	    row.appendChild(index_td);
+
+        info['streams'].forEach((stream) => {
+        	var row = document.createElement('tr');
+        	results_tbody.appendChild(row);
+
+        	index_td = document.createElement('td');
+	        index_td.className="align-middle";
+	        index_td.innerHTML = "Stream&nbsp;<b>#" + stream['stream_index'] + ":" + stream['sub_stream_index'] + "</b>";
+	        row.appendChild(index_td);
+
+        	index_td = document.createElement('td');
+	        index_td.className="align-middle";
+	        var image = "";
+	        if(stream['is_video']){
+	        	image = "<img src='images/video.svg'/> ";
+	        }else if (stream['is_audio']){
+	        	image = "<img src='images/audio.svg'/> ";
+	        }
+	        index_td.innerHTML = image;
+	        row.appendChild(index_td);
+
+        	
+
+	        index_td = document.createElement('td');
+	        index_td.className="align-middle";
+	        index_td.innerHTML = stream['encoding_info'].replace(",","<br>");
+	        row.appendChild(index_td);
+        });
+       
+        const  results_container = document.getElementById("results");
+        results_container.style["display"] = "block";
+
+      }
+
+      async function addToFileQueue(ev){
+        fileList = ev.target.files;
+        for (var i = 0; i < fileList.length; i++) {
+          await addToQueue(fileList[i]);
+        }
+        processMediaFiles();
+      }
+    </script>
+
+    <style>
+      
+    </style>
+
+  </head>
+  <body >
+    <div id="drop_zone" class="text-muted">
+      <svg xmlns="http://www.w3.org/2000/svg" style="width: 20vh;height: 20vh"   fill="rgb(108, 117, 125)" viewBox="0 0 16 16">
+          <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+          <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+      </svg>
+    </div>
+
+    <h1 class="h2">Basic media info</h1>
+
+    <fieldset class="border p-2">
+      <legend class="w-auto float-none small text-muted">1. Select media files</legend>      
+        <input type="file" id="uploader" multiple="true" hidden>
+
+        <div style="display: grid; grid-template-columns: 1fr;grid-gap: 0.7rem;min-width: 150px;text-align: center; "  >
+        <button type="button" id="uploader_button" class="btn btn-lg btn-primary">Select media files</button>
+        <span class="text-muted">
+        ... or drop your media files
+        </span>
+
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="rgb(108, 117, 125)"  style="margin: auto" viewBox="0 0 16 16">
+          <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+          <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+        </svg>      
+    </fieldset>
+
+    <fieldset id="results" class="border p-2" style="display: none"  >
+      <legend class="w-auto float-none small text-muted">2. Media info</legend>
+        <div class="table-responsive">
+          <table class="table table-sm">
+            <tbody id="info_results">
+            </tbody>
+          </table>
+        </div>
+    </fieldset>
+
+    <script src="bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  </body>
+</html>
