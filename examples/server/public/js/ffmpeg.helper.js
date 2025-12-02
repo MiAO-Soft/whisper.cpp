@@ -10,7 +10,7 @@ class FFmpegHelper{
 	ffmpegLogHandler = null;
 
 	handleFFmpegOutput = (type,message) => {
-		//console.log(type,message);
+		// console.log(type,message);
 		if(this.ffmpegLogHandler != null) this.ffmpegLogHandler(type,message);
 		
 		this.detectDuration(message);
@@ -70,8 +70,8 @@ class FFmpegHelper{
 	}
 
 	detectCompletion = (message) => {
-		if ((message.includes('kB muxing overhead') || message.includes('Invalid argument') || message.includes('Invalid data found') || message.includes("At least one output file")) && this.runResolve !== null) {
-		  this.runResolve();
+		if ((message.includes('does not contain any stream') || message.includes('kB muxing overhead') || message.includes('Invalid argument') || message.includes('Invalid data found') || message.includes("At least one output file")) && this.runResolve !== null) {
+		  this.runResolve(message);
 		  this.runResolve = null;
 		  this.ffmpegLogEmptyCount = 0;
 		  this.ffmpegRunning = false;
