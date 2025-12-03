@@ -8,10 +8,10 @@ for %%I in ("%~f0") do set "SCRIPT_DIR=%%~dpI"
 set "SCRIPT_DIR=%SCRIPT_DIR:~0,-1%"
 
 echo [INFO] Script directory: "%SCRIPT_DIR%"
-set "EXE_PATH=%SCRIPT_DIR%whisper-server.exe"
-set "MODEL_PATH=%SCRIPT_DIR%models\ggml-large-v3.bin"
-set "VAD_MODEL_PATH=%SCRIPT_DIR%models\ggml-silero-v6.2.0.bin"
-set "PUBLIC_DIR=%SCRIPT_DIR%static"
+set "EXE_PATH=%SCRIPT_DIR%\whisper-server.exe"
+set "MODEL_PATH=%SCRIPT_DIR%\models\ggml-large-v3.bin"
+set "VAD_MODEL_PATH=%SCRIPT_DIR%\models\ggml-silero-v6.2.0.bin"
+set "PUBLIC_DIR=%SCRIPT_DIR%\static"
 set "PORT=18181"
 
 :: Optional: remove trailing backslash for cleaner display
